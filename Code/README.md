@@ -16,7 +16,7 @@ The jar-files were used as follows:
    * \> src-sep-train_cleaned
 3. Get wordlist from the lines with even number of lines in the Ramses data with MaReTELexiconMaker.jar
    * `java -jar MaReTELexiconMaker.jar src-sep-train_cleaned tgt-train_cleaned <name>`
-   * \> words_<name>
+   * \> words_\<name\>
 4. Get lines with uneven number of words from Ramses data with MaReTEGetUnevenLines.jar
    * `java -jar MaReTEGetUnevenLines.jar src-sep-train_cleaned tgt-train_cleaned <name>`
    * \> src_\<name\>
