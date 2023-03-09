@@ -1,6 +1,6 @@
-### The Codes used for creating the transliteration models
+### The Scripts used for creating the transliteration models
 
-The Codes were used as follows:
+The jar-files were used as follows:
 
 1. Get wordlist from Aes data with MaReTEAesVocabularyMaker.jar
    * `java -jar MaReTEAesVocabularyMaker.jar <AesFiles folder>`
