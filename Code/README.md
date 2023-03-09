@@ -19,8 +19,8 @@ The jar-files were used as follows:
    * \> words_<name>
 4. Get lines with uneven number of words from Ramses data with MaReTEGetUnevenLines.jar
    * `java -jar MaReTEGetUnevenLines.jar src-sep-train_cleaned tgt-train_cleaned <name>`
-   * \> src_<name>
-   * \> tgt_<name>
+   * \> src_\<name\>
+   * \> tgt_\<name\>
 5. Align src_ramsesUneven and tgt_ramsesUneven with MaReTENeedlemanWunsch.jar
    * `java -jar MaReTENeedlemanWunsch.jar src_ramsesUneven tgt_ramsesUneven words_ramsesEven,AesWords`
    * \> alignedLines
