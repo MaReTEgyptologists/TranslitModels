@@ -1,1 +1,1 @@
-### Ramses data after cleaning (all and only the lines with different number of tokens in MdC and transliteration)
+### Ramses training data after cleaning (all sentences (train_cleaned) and only the lines with different number of tokens in MdC and transliteration (ramsesUneven))
