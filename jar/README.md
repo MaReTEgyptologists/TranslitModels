@@ -1,6 +1,4 @@
-Jar files that can be used for creating transliteration models from AES and Ramses Transliteration Corpora
-
-The jar-files were used as follows:
+### Jar files used for creating transliteration models from AES and Ramses Transliteration Corpora
 
 1. Get wordlist from Aes data with MaReTEAesVocabularyMaker.jar
    * `java -jar MaReTEAesVocabularyMaker.jar <AesFiles folder>`
