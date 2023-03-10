@@ -26,4 +26,4 @@
    * `java -jar MaReTELexiconMaker.jar aligned_ramsesUneven ramsesUneven`
    * \> words_ramsesUneven (see Output/WordLists)
 7. Make transliteration models (JSON file format)
-   * `java -jar MaReTEModelMaker <list;of;wordlists;to;use> <name of model> <source of model> > Stdout
+   * `java -jar MaReTEModelMaker <list,of,wordlists,to,use> <name of model> <source of model> > Stdout
