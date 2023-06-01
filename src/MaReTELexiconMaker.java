@@ -94,7 +94,7 @@ public class MaReTELexiconMaker {
                 //get words if line pairs are of even length
                 if (mdcArray.length == transArray.length) {
                     getWords(mdcLine, transLine);
-                    //Uncomment to align the lines to Stdout
+                    //Uncomment to print the lines to Stdout
                     /*System.out.println(mdcLine);
                     System.out.println(transLine);
                     System.out.println("");*/
@@ -130,30 +130,25 @@ public class MaReTELexiconMaker {
         //Tested with different kinds of dictionaries from the Ramses Corpus training sets lines of equal number of tokens
             // in order to use with Needleman-Wunch algorithm (MaReTENeedlemanWunch.jar) to align lines of uneven lenght in the same Corpus
         //if (!mdcLine.contains("MISSING") && !mdcLine.contains("SHADED") && !transLine.matches(".*[\\[/?<].*") && !transLine.matches(".*_ \\([^\\)]+\\) _.*") && !mdcLine.contains("LACUNA")) {
+        //if (!mdcLine.contains("MISSING") && !mdcLine.contains("SHADED") && !transLine.matches(".*[\\[/?<].*") && !transLine.matches(".*_ \\([^\\)]+\\) _.*")) {
         //if  (!mdcLine.contains("MISSING") && !mdcLine.contains("SHADED") && !transLine.matches(".*[\\[/\\?<].*") && !transLine.matches(".*_ \\([^\\)]+\\) _.*") && !transLine.matches("\\([^\\)]+\\) _.*")  && !mdcLine.contains("LACUNA")) {
         //if  (!mdcLine.contains("MISSING") && !transLine.matches(".*[\\[/\\?<].*") && !transLine.matches(".*_ \\([^\\)]+\\) _.*") && !transLine.matches("\\([^\\)]+\\) _.*")) {
         String[] mdcArray = mdcLine.split("_");
         String[] transArray = transLine.split("_");
+        //System.out.println(mdcLine);
         //the best method is to take all line pairs of the same lenght but to leave out words that are partly or totally missing
         //and words that have been added to the transliteration by the editors
         for (int i=0; i<mdcArray.length-1; i++) {
             mdc = mdcArray[i].trim();
             translit = transArray[i].trim();
-            /*if (translit.equals("p A y . f") && mdc.equals("-")) {
+            
+            /*if (translit.equals("i n") && mdc.equals("-")) {
                 System.out.println(mdcLine);
                 System.out.println(transLine);
             }*/
             //leave out words that are totally or partly missing
-            if (!mdc.equals("MISSING") && 
-                    !mdc.contains("SHADE") && 
-                    !translit.contains("[") && 
-                    !translit.equals("/ /") && 
-                    !translit.contains("?") && 
-                    !translit.contains("/ /") &&
-                    !mdc.equals("-") &&
-                    !translit.equals("-") &&
-                    !mdc.equals("LACUNA")
-                    ) {
+            //otherwise add word to map
+            if (isAllowed(mdc, translit)) {
                 translits = new TreeMap<>();
                 count = 0;
                 if (words.containsKey(mdc)) {
@@ -167,6 +162,22 @@ public class MaReTELexiconMaker {
                 words.put(mdc, translits);
             }
         }
+    }
+    
+    private static boolean isAllowed(String mdc, String translit) {
+        if (mdc.equals("MISSING") || 
+                mdc.contains("SHADE") || 
+                translit.contains("[") || 
+                translit.equals("/ /") || 
+                translit.contains("?") || 
+                translit.contains("/ /") ||
+                mdc.equals("-") ||
+                translit.equals("-") ||
+                mdc.equals("LACUNA")
+                ) {
+            return false;
+        }
+        return true;
     }
     
     private static void printWords(TreeMap<String, TreeMap<String, Integer>> words, String filename) throws IOException {
