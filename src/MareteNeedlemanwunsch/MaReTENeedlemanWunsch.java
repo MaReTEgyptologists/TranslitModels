@@ -14,6 +14,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Stack;
 import java.util.TreeMap;
 import java.util.TreeSet;
@@ -149,23 +150,23 @@ public class MaReTENeedlemanWunsch {
         int score = -1;
         scores[0][0] = 0;
         directions[0][0] = "done";
-        for (int i=1; i<=mdcArray.length; i++) {
+        for (int i=1; i<mdcArray.length; i++) {
             scores[i][0] = score--;
             directions[i][0] = "T";
         }
         score = -1;
-        for (int j=1; j<=transArray.length; j++) {
+        for (int j=1; j<transArray.length; j++) {
             scores[0][j] = score--;
             directions[0][j] = "L";
         }
         //Then fill the rest fo the table 
         //Check each mdc in the mdc-line
-        for (int i=1; i<=mdcArray.length; i++) {
+        for (int i=1; i<mdcArray.length; i++) {
             mdc = mdcArray[i-1].trim();
             //get possible transliterations for this mdc from the vocabulary
             translits = getTranslitSet(mdc);
             //check each transliteration in the transliteration-line against the possible transliteration of the mdc
-            for (int j=1; j<=transArray.length; j++) {
+            for (int j=1; j<transArray.length; j++) {
                 translit = transArray[j-1].trim();
                 //get the points for this spesific transliteration-mdc pair
                 points = getPoints(translit, translits, mdc);
@@ -190,6 +191,7 @@ public class MaReTENeedlemanWunsch {
                     DirectionList = new ArrayList<>();
                 }
                 DirectionList.add("L");
+                //System.out.println(DirectionList.toString());
                 scored.put(left, DirectionList);
                 //if the score from top left (i.e. diagonally) is the same as from top or the left
                 //get the list from treemap scored
@@ -208,10 +210,18 @@ public class MaReTENeedlemanWunsch {
                 for (String word : DirectionList) {
                     direction += ";"+word;
                 }
+                //System.out.println(highestScore+"\t"+direction);
                 scores[i][j] = highestScore;
                 directions[i][j] = direction;
             }
         }
+        
+        /*for (int i=0; i<=mdcArray.length; i++) {
+            for (int j=0; j<=transArray.length; j++) {
+                System.out.print(scores[i][j]+"\t");
+            }
+            System.out.println("");
+        }*/
         //to get the best alignment, start from the last words
         int j = transArray.length-1;
         int i = mdcArray.length-1;
@@ -221,6 +231,7 @@ public class MaReTENeedlemanWunsch {
         int nextI = 0, nextJ = 0;
         TreeMap<Integer, ArrayList<String>> scoredLines = new TreeMap<>();
         direction = directions[i][j];
+        //System.out.println(direction);
         //each Node-object knows its coordinates in the tables and one of the directions where the highest score came from
         Node newNode;
         direction = direction.replaceFirst(";", "");
@@ -229,6 +240,7 @@ public class MaReTENeedlemanWunsch {
         //if several directions, top left will be the fist to come out of the stack, 
         //      first of the alignments with the highest points is chosen
         for (String dir : directionArray) {
+            //System.out.println(dir);
             newNode = new Node(i, j, dir);
             newNode.setPreviousString("", "");
             stack.push(newNode);
@@ -256,8 +268,10 @@ public class MaReTENeedlemanWunsch {
                 }
                 //score the words again, points for each node on the way to the first words are added up!
                 score = getPoints(trans, translits, codage);
+                //score = scores[i][j];
 
                 String thisDirection = node.getDirection();
+                //System.out.println(thisDirection);
                 //depending on the direction, the words are aligned with each other or with '-'
                 if (thisDirection.equals("D")) {
                     tempTrans = trans+" _ "+tempTrans;
@@ -280,16 +294,33 @@ public class MaReTENeedlemanWunsch {
                 }
                 //get the direction of the next cell (according to the direction in this cell/node)
                 direction = directions[nextI][nextJ];
+                int pointsToSave = points+score;
+                //System.out.println(direction);
                 //when first words reached, save the possible alignment of the line with the points
                 if (direction.equals("done")) {
                     transliteration = tempTrans;
                     manuel = tempMdc;
+                    //System.out.println(manuel+"\t"+points);
                     //only the first occurence for each points, are saved
-                    if (!scoredLines.containsKey(points)) {
-                        ArrayList<String> list = new ArrayList<>();
+                    ArrayList<String> list;
+                    if (!scoredLines.containsKey(pointsToSave)) {
+                        list = new ArrayList<>();
                         list.add(manuel);
                         list.add(transliteration);
-                        scoredLines.put(points, list);
+                        //System.out.println(pointsToSave);
+                        scoredLines.put(pointsToSave, list);
+                    }
+                    else {
+                        list = scoredLines.get(pointsToSave);
+                        String[] manuelArray = manuel.split(" _ ");
+                        String[] savedArray = list.get(0).split(" _ ");
+                        if (manuelArray.length > savedArray.length) {
+                            list = new ArrayList<>();
+                        list.add(manuel);
+                        list.add(transliteration);
+                        //System.out.println(pointsToSave);
+                        scoredLines.put(pointsToSave, list);
+                        }
                     }
                 }
                 //if not firsts words yet, save new Node to the stack for each of the directions of the following cell
@@ -299,12 +330,18 @@ public class MaReTENeedlemanWunsch {
                     for (String dir : directionArray) {
                         newNode = new Node(nextI, nextJ, dir);
                         newNode.setPreviousString(tempMdc, tempTrans);
-                        newNode.setPreviousPoints(points+score);
+                        newNode.setPreviousPoints(pointsToSave);
                         stack.push(newNode);
                     }
                 }
             }
         }
+        /*for (Map.Entry<Integer, ArrayList<String>> entry : scoredLines.entrySet()) {
+            System.out.println(entry.getKey());
+            for (String line : entry.getValue()) {
+                System.out.println(line);
+            }
+        }*/
         //After all possible routes are saved, get the aligned lines with the highest score
         int winningScore = scoredLines.lastKey();
         ArrayList<String> list = scoredLines.get(winningScore);
@@ -320,13 +357,13 @@ public class MaReTENeedlemanWunsch {
         
         if (vocab.containsKey(mdc)) {
             translits = vocab.get(mdc);
-            //System.out.println(mdc);
+            //System.out.println(mdc+"\t"+translits.toString());
         }
         return translits;
     }
     
     //get the possible transliterations for some of the words that start with the same sign
-    private static TreeSet<String> getMoreTranslits(String mdc, TreeSet<String> translits) {
+   private static TreeSet<String> getMoreTranslits(String mdc, TreeSet<String> translits) {
         TreeSet<String> mdcs;
         String[] array = mdc.split(" ");
         if (array.length > 1) {
@@ -338,7 +375,7 @@ public class MaReTENeedlemanWunsch {
                     for (String codeString : mdcs) {
                         //if the mdc is only 2 signs long or the 3 first signs are the same as with the word
                         //get the transliterations for this word (starting with the first sign)
-                        String beginning = ""; 
+                        String beginning = array[0]+" "+array[1]; 
                         if (array.length > 2) {
                             beginning = array[0]+" "+array[1]+" "+array[2];
                         }
@@ -364,45 +401,67 @@ public class MaReTENeedlemanWunsch {
         //Ramses specific:
         //if transliteration is an insertion by the editor (e.g. '(Hr)' or '= <f>')
         //the penalty score is lower
+        //EXTRA
         if (
                 translit.matches("=? ?<.*") || 
-                translit.matches("=? ?\\([^\\)]* \\)")
+                translit.matches("=? ?\\([^\\)]* \\)") //||
+                //translit.equals("?")
                 ) {
             points = -5;
         }
         //if the transliteration is found in the possible transliterations for the mdc
         // score is the highest
-        else if (translits.contains(translit)) {
+        //SIMPLE-
+        //else 
+        if (translits.contains(translit)) {
             points = 5;
+            //System.out.println(translit);
+            //points = 2;
         }
         //if not found, make additional checks on the transliteration
+        //SIMPLE+ alkaa samalla
         else if (checkTranslit(translit, translits)) {
                 points = 4;
+                //points = 1;
             }
-        else {
+       else {
             //get more possible transliterations
             translits = getMoreTranslits(mdc, translits);
             //if transliteration is found in the enlarged set of possible transliterations
             //score is marginally lower than the highest
+            //First3
             if (translits.contains(translit)) {
                 points = 4;
             }
             //if not found, make additional checks on the transliteration 
             //or if mdc with SHADED 
-            else if (checkTranslit(translit, translits) || (mdc.contains("SHADED") && translit.contains("["))) {
+            /*else if (checkTranslit(translit, translits) || (mdc.contains("SHADED") && translit.contains("["))) {
                 points = 3;
-            }
+            }*/
             //else if mdc has more than one sign, make further checks
             else if (mdc.split(" ").length > 1) {
                 //if (checkReverse(translit, mdc)) {
-                //if (checkFirstSign(translit, mdc)) {
-                if (checkReverse(translit, mdc) || checkFirstSign(translit, mdc)) {
+                if (checkFirstSign(translit, mdc)) {
+                //if (dotTrim(translit, translits)) {
+                //if (checkFirstSign(translit, mdc) || dotTrim(translit, translits)) {
+                //if (checkReverse(translit, mdc) || checkFirstSign(translit, mdc) || dotTrim(translit, translits)) {
+                //if (checkReverse(translit, mdc) || checkFirstSign(translit, mdc)) {
                     points = 3;
                 }
             }
         }
         
         return points;
+    }
+    
+    private static boolean dotTrim(String translit, TreeSet<String> translits) {
+        if (translit.contains(".")) {
+            translit = translit.replaceFirst("\\..*$", "");
+            if (translits.contains(translit)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     //Additional checks for the transliteration
@@ -456,7 +515,7 @@ public class MaReTENeedlemanWunsch {
         translits = vocab.get(array[0]);
         if (translits != null) {
             for (String trans : translits) {
-                if (translit.startsWith(trans)) {
+                if (translit.startsWith(trans) || trans.startsWith(translit)) {
                     return true;
                 }
             }
@@ -484,7 +543,7 @@ public class MaReTENeedlemanWunsch {
                         tempTranslit += Character.toString(translit.charAt(i))+" ";
                     }
                 }
-                translit = tempTranslit;
+                translit = tempTranslit.trim();
                 translits = new TreeSet<>();
                 if (vocab.containsKey(mdc)) {
                     translits = vocab.get(mdc);
@@ -537,6 +596,7 @@ public class MaReTENeedlemanWunsch {
                 reader = new BufferedReader(new FileReader(file));
                 String line;
                 while ((line = reader.readLine()) != null) {
+                    //System.out.println(line);
                     if (!ignored.contains(line.trim())) {
                         ignored.add(line.trim());
                     }
