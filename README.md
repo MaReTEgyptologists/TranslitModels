@@ -1,4 +1,4 @@
-# MaReTE TranslitModels
+# MaReTE Transliteration Models
 Transliteration (word) models for hieroglyphic texts created from _The Ramses Transliteration Corpus, V. 2019-09-01_ based on the <a href="http://ramses.ulg.ac.be">Ramses Online</a> data published by Serge Rosmorduc (in https://gitlab.cnam.fr/gitlab/rosmorse/ramses-trl and https://doi.org/10.5281/zenodo.4954597) and from the _AES - Ancient Egyptian Sentences; Corpus of Ancient Egyptian sentences for corpus-linguistic research_ based on the <a href="https://thesaurus-linguae-aegyptiae.de">Thesaurus Linguae Aegyptiae</a> data published by Simon Schweitzer (in https://github.com/simondschweitzer/aes).
 
 The creation of the models is explained in:
