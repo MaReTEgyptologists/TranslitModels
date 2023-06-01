@@ -4,6 +4,8 @@ Transliteration (word) models for hieroglyphic texts created from _The Ramses Tr
 The creation of the models is explained in:
 Jauhiainen, H & T. Jauhiainen (forthcoming) Transliteration Model for Egyptian Words. Proceedings of Sustainability: Environment - Community - Data. The 7th Digital Humanities in the Nordic and Baltic Countries Conference. Oslo – Stavanger – Bergen, Norway. March 8–10, 2023.
 
+The models are also available in Zenodo: http://doi.org/10.5281/zenodo.7991241
+
 For the data see also:
 
 S. Rosmorduc, Automated Transliteration of Late Egyptian Using Neural Networks: An Experiment in “Deep Learning”, Lingua Aegyptia-Journal of Egyptian Language Studies 28 (2020) 233–257.
